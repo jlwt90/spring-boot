@@ -16,6 +16,7 @@
 
 package sample.webflux;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
 
 import org.springframework.stereotype.Component;
@@ -25,8 +26,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Component
 public class EchoHandler {
 
+	@Autowired
+	private PrefixConfig config;
+
 	public Mono<ServerResponse> echo(ServerRequest request) {
-		return ServerResponse.ok().body(request.bodyToMono(String.class), String.class);
+		String result = config.getPrefix() + request.bodyToMono(String.class).block() + " by " + config.getAuthor();
+		return ServerResponse.ok().body(Mono.just(result), String.class);
 	}
 
 }
